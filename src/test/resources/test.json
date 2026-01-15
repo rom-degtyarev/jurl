@@ -1,0 +1,5 @@
+{
+  "data": "test",
+  "success": true,
+  "body-param": "${body-param}"
+}
