@@ -3,43 +3,85 @@ package ru.jurl.support;
 import lombok.SneakyThrows;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.joining;
 import static ru.jurl.support.Messages.DEFAULT_CHARSET;
 
 public class Resources {
-
     public static final String PATH_PREFIX = "path:";
     public static final String FILE_PREFIX = "file:";
     public static final String CLASSPATH_PREFIX = "classpath:";
 
     @SneakyThrows
-    public static String readString(String location) {
+    public static Supplier<String> of(String location) {
         Require.notNull(location, () -> "Location string is null");
         if (location.startsWith(PATH_PREFIX)) {
-            String pathLocation = location.substring(PATH_PREFIX.length()).trim();
-            Path path = Paths.get(pathLocation);
-            return Files.readString(path);
+            return path(location);
         }
         if (location.startsWith(FILE_PREFIX)) {
-            String fileLocation = location.substring(FILE_PREFIX.length()).trim();
-            File file = new File(fileLocation);
-            return Files.readString(file.toPath());
+            return file(location);
         }
         if (location.startsWith(CLASSPATH_PREFIX)) {
-            ClassLoader ccl = Thread.currentThread().getContextClassLoader();
-            String resourceLocation = location.substring(CLASSPATH_PREFIX.length()).trim();
-            try (
-                    InputStream inputStream = ccl.getResourceAsStream(resourceLocation);
-                    Reader reader = new InputStreamReader(inputStream, DEFAULT_CHARSET);
-                    BufferedReader buffer = new BufferedReader(reader)
-            ) {
-                return buffer.lines().collect(joining("\n"));
-            }
+            return resource(location);
         }
         throw new IllegalArgumentException("Resource location not supported: " + location);
+    }
+
+    @SneakyThrows
+    public static Supplier<String> resource(String location) {
+        Require.notNull(location, () -> "Resource location is null");
+        location = location.trim();
+        if (location.startsWith(CLASSPATH_PREFIX)) {
+            location = location.substring(CLASSPATH_PREFIX.length());
+        }
+        ClassLoader ccl = Thread.currentThread().getContextClassLoader();
+        InputStream inputStream = ccl.getResourceAsStream(location.trim());
+        return () -> read(inputStream, DEFAULT_CHARSET);
+    }
+
+    public static Supplier<String> file(String location) {
+        Require.notNull(location, () -> "File location is null");
+        location = location.trim();
+        if (location.startsWith(FILE_PREFIX)) {
+            location = location.substring(FILE_PREFIX.length());
+        }
+        File file = new File(location.trim());
+        return () -> read(file);
+    }
+
+    public static Supplier<String> path(String location) {
+        Require.notNull(location, () -> "Path location is null");
+        location = location.trim();
+        if (location.startsWith(PATH_PREFIX)) {
+            location = location.substring(PATH_PREFIX.length());
+        }
+        Path path = Paths.get(location.trim());
+        return () -> read(path);
+    }
+
+    @SneakyThrows
+    public static String read(InputStream input, Charset charset) {
+        try (
+                InputStream stream = input;
+                Reader reader = new InputStreamReader(stream, charset);
+                BufferedReader buffer = new BufferedReader(reader)
+        ) {
+            return buffer.lines().collect(joining("\n"));
+        }
+    }
+
+    @SneakyThrows
+    public static String read(File file) {
+        return Files.readString(file.toPath());
+    }
+
+    @SneakyThrows
+    public static String read(Path path) {
+        return Files.readString(path);
     }
 }

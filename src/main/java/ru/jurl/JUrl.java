@@ -1,10 +1,12 @@
 package ru.jurl;
 
+import ru.jurl.builders.ConversationBuilder;
+
 import java.util.function.Consumer;
 
 public class JUrl {
-    public static Conversation jurl(Consumer<Conversation.ConversationBuilder> init) {
-        Conversation.ConversationBuilder conversation = Conversation.create();
+    public static Conversation jurl(Consumer<ConversationBuilder> init) {
+        ConversationBuilder conversation = new ConversationBuilder();
         init.accept(conversation);
         return conversation.please();
     }

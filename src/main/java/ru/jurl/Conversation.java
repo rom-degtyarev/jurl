@@ -1,11 +1,6 @@
 package ru.jurl;
 
-import lombok.Builder;
-import ru.jurl.http.Extractor;
-import ru.jurl.http.Exchange;
-import ru.jurl.http.HttpClientExchange;
-import ru.jurl.http.RequestMessage;
-import ru.jurl.http.ResponseMessage;
+import ru.jurl.http.*;
 
 import java.util.ArrayList;
 import java.util.Deque;
@@ -27,11 +22,6 @@ public class Conversation {
     private final Map<String, Function<ResponseMessage, String>> replyParameters;
     private final Deque<RequestMessage> messages;
 
-    @Builder(
-            setterPrefix = "with",
-            builderMethodName = "create",
-            buildMethodName = "please"
-    )
     public Conversation(
             Exchange exchange,
             Map<String, Supplier<String>> parameters,

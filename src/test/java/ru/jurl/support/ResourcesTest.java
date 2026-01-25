@@ -7,8 +7,8 @@ import static org.junit.Assert.assertNotNull;
 public class ResourcesTest {
     @Test
     public void read_resource_content() {
-        assertNotNull(Resources.readString("file:src/test/resources/test.json"));
-        assertNotNull(Resources.readString("path:src/test/resources/test.json"));
-        assertNotNull(Resources.readString("classpath:test.json"));
+        assertNotNull(Resources.of("file:src/test/resources/test.json").get());
+        assertNotNull(Resources.of("path:src/test/resources/test.json").get());
+        assertNotNull(Resources.of("classpath:test.json").get());
     }
 }

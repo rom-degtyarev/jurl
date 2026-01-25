@@ -25,7 +25,7 @@ public record MessageTemplate(RequestMessage message) {
 
     private String merge(String text, Map<String, String> parameters) {
         if (text.startsWith("<")) {
-            text = Resources.readString(text.substring(1).trim());
+            text = Resources.of(text.substring(1).trim()).get();
         }
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
             String parameter = entry.getKey();
