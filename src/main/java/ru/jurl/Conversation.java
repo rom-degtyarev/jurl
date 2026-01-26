@@ -1,5 +1,7 @@
 package ru.jurl;
 
+import ru.jurl.filter.Filter;
+import ru.jurl.filter.InterceptedFunction;
 import ru.jurl.http.*;
 
 import java.util.ArrayList;
@@ -11,13 +13,14 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static ru.jurl.support.Extractors.Last;
 import static ru.jurl.support.Messages.merge;
 import static ru.jurl.support.Messages.request;
 
 public class Conversation {
-    private final Exchange exchange;
+    private final Function<RequestMessage, ResponseMessage> exchange;
     private final Map<String, Supplier<String>> parameters;
     private final Map<String, Function<ResponseMessage, String>> replyParameters;
     private final Deque<RequestMessage> messages;
@@ -25,12 +28,20 @@ public class Conversation {
     public Conversation(
             Exchange exchange,
             Map<String, Supplier<String>> parameters,
-            Map<String, Function<ResponseMessage, String>> replyParameters
+            Map<String, Function<ResponseMessage, String>> replyParameters,
+            List<Filter<RequestMessage, ResponseMessage>> filters
     ) {
-        this.exchange = exchange != null ? exchange : new HttpClientExchange();
         this.parameters = new ConcurrentHashMap<>(parameters == null ? emptyMap() : parameters);
         this.replyParameters = new ConcurrentHashMap<>(replyParameters == null ? emptyMap() : replyParameters);
         this.messages = new ConcurrentLinkedDeque<>();
+        if (exchange == null) {
+            exchange = new HttpClientExchange();
+        }
+        if (filters == null || filters.isEmpty()) {
+            this.exchange = exchange;
+        } else {
+            this.exchange = new InterceptedFunction<>(exchange, filters);
+        }
     }
 
     public Conversation replyParameter(String name, Function<ResponseMessage, String> valueFun) {

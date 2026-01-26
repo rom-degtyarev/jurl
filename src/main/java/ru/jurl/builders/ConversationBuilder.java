@@ -1,9 +1,15 @@
 package ru.jurl.builders;
 
 import ru.jurl.Conversation;
+import ru.jurl.filter.Filter;
+import ru.jurl.filter.LoggerFilter;
 import ru.jurl.http.Exchange;
+import ru.jurl.http.RequestMessage;
 import ru.jurl.http.ResponseMessage;
+import ru.jurl.support.Messages;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -12,14 +18,28 @@ import java.util.function.Supplier;
 import static java.util.Map.entry;
 import static ru.jurl.support.Maps.map;
 import static ru.jurl.support.Maps.mapOf;
+import static ru.jurl.support.Messages.BodyPrintType.HIDE;
 
 public class ConversationBuilder {
     private Exchange exchange;
     private Map<String, Supplier<String>> parameters;
     private Map<String, Function<ResponseMessage, String>> replyParameters;
+    private List<Filter<RequestMessage, ResponseMessage>> filters;
 
     public Conversation please() {
-        return new Conversation(exchange, parameters, replyParameters);
+        return new Conversation(exchange, parameters, replyParameters, filters);
+    }
+
+    public ConversationBuilder enableLogger() {
+        return enableLogger(HIDE);
+    }
+
+    public ConversationBuilder enableLogger(Messages.BodyPrintType printType) {
+        if (filters == null) {
+            filters = new ArrayList<>();
+        }
+        filters.add(new LoggerFilter(printType));
+        return this;
     }
 
     public ConversationBuilder withExchange(Exchange exchange) {

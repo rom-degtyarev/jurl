@@ -2,8 +2,13 @@ package ru.jurl.http;
 
 import lombok.Builder;
 import lombok.Getter;
+import ru.jurl.support.Messages;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
+import static ru.jurl.support.Messages.BodyPrintType.HIDE;
 
 @Builder(
         setterPrefix = "with",
@@ -26,5 +31,10 @@ public class RequestMessage {
                 .withProtocol(protocol)
                 .withHeaders(headers);
         return body == null ? copy : copy.withBody(new Body(body.contentType(), body.content()));
+    }
+
+    @Override
+    public String toString() {
+        return Messages.toString(this, HIDE);
     }
 }

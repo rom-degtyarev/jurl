@@ -30,4 +30,11 @@ public class Strings {
     public static byte[] fromHexString(String hexString) {
         return HexFormat.of().parseHex(hexString);
     }
+
+    public static String abbreviate(String s, int maxSize) {
+        if (s == null) return null;
+        int length = s.length();
+        if (length <= maxSize) return s;
+        return s.substring(0, maxSize);
+    }
 }
