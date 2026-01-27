@@ -6,7 +6,7 @@ import ru.jurl.support.Messages;
 
 import java.util.List;
 
-import static ru.jurl.support.Messages.BodyPrintType.HIDE;
+import static ru.jurl.support.Messages.PrintOption.HEADERS;
 
 @Builder(
         setterPrefix = "with",
@@ -22,6 +22,6 @@ public class ResponseMessage {
 
     @Override
     public String toString() {
-        return Messages.toString(this, HIDE);
+        return Messages.toString(this, HEADERS);
     }
 }

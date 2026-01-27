@@ -7,8 +7,8 @@ import ru.jurl.http.ResponseMessage;
 
 import static org.junit.Assert.*;
 import static ru.jurl.JUrl.jurl;
-import static ru.jurl.support.Messages.BodyPrintType.FULL;
-import static ru.jurl.support.Messages.BodyPrintType.HIDE;
+import static ru.jurl.support.Messages.PrintOption.BODY;
+import static ru.jurl.support.Messages.PrintOption.HEADERS;
 import static ru.jurl.support.Messages.response;
 import static ru.jurl.support.Strings.toHexString;
 
@@ -24,7 +24,7 @@ public class JUrlTest {
     public void jurl_parameterized_conversation() {
         ResponseMessage response = jurl(conversation -> conversation
                 .withParameters("yandex", "https://yandex.ru")
-                .enableLogger(HIDE)
+                .enableLogger()
         ).andThen("GET ${yandex}/metro")
                 .andThen("GET ${yandex}/images")
                 .andThen("GET ${yandex}/maps")
@@ -56,7 +56,7 @@ public class JUrlTest {
         //when
         ResponseMessage response = jurl(conversation -> conversation
                 .withExchange(mockExchange)
-                .enableLogger(FULL)
+                .enableLogger(HEADERS, BODY)
         ).andThen("GET https://ya.ru/")
                 .run();
         //then

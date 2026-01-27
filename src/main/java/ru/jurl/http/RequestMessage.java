@@ -5,10 +5,9 @@ import lombok.Getter;
 import ru.jurl.support.Messages;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
-import static ru.jurl.support.Messages.BodyPrintType.HIDE;
+import static ru.jurl.support.Messages.PrintOption.HEADERS;
 
 @Builder(
         setterPrefix = "with",
@@ -35,6 +34,6 @@ public class RequestMessage {
 
     @Override
     public String toString() {
-        return Messages.toString(this, HIDE);
+        return Messages.toString(this, HEADERS);
     }
 }

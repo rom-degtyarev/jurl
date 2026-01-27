@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 import static java.util.Map.entry;
 import static ru.jurl.support.Maps.map;
 import static ru.jurl.support.Maps.mapOf;
-import static ru.jurl.support.Messages.BodyPrintType.HIDE;
+import static ru.jurl.support.Messages.PrintOption.HEADERS;
 
 public class ConversationBuilder {
     private Exchange exchange;
@@ -30,15 +30,11 @@ public class ConversationBuilder {
         return new Conversation(exchange, parameters, replyParameters, filters);
     }
 
-    public ConversationBuilder enableLogger() {
-        return enableLogger(HIDE);
-    }
-
-    public ConversationBuilder enableLogger(Messages.BodyPrintType printType) {
+    public ConversationBuilder enableLogger(Messages.PrintOption ...options) {
         if (filters == null) {
             filters = new ArrayList<>();
         }
-        filters.add(new LoggerFilter(printType));
+        filters.add(new LoggerFilter(options));
         return this;
     }
 
