@@ -4,9 +4,12 @@ import ru.jurl.http.Header;
 import ru.jurl.http.headers.ContentDisposition;
 import ru.jurl.http.headers.ContentType;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+
+import static java.util.Collections.emptyList;
 
 public class Headers {
     public static final String CONTENT_TYPE = "Content-Type";
@@ -15,6 +18,7 @@ public class Headers {
     public static final Predicate<Header> CONTENT_TYPE_FILTER = header -> header instanceof ContentType;
 
     public static <T extends Header> List<T> get(List<Header> headers, Predicate<Header> predicate) {
+        if (headers == null) return emptyList();
         return (List<T>) headers.stream().filter(predicate).toList();
     }
 

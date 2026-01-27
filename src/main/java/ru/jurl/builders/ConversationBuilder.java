@@ -18,7 +18,6 @@ import java.util.function.Supplier;
 import static java.util.Map.entry;
 import static ru.jurl.support.Maps.map;
 import static ru.jurl.support.Maps.mapOf;
-import static ru.jurl.support.Messages.PrintOption.HEADERS;
 
 public class ConversationBuilder {
     private Exchange exchange;

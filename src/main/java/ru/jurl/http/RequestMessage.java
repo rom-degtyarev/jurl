@@ -6,7 +6,6 @@ import ru.jurl.support.Messages;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.joining;
 import static ru.jurl.support.Messages.PrintOption.HEADERS;
 
 @Builder(

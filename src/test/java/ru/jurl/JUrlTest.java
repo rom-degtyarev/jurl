@@ -15,7 +15,7 @@ import static ru.jurl.support.Strings.toHexString;
 public class JUrlTest {
     @Test
     public void jurl_conversation() {
-        ResponseMessage response = jurl("GET https://ya.ru/").run();
+        ResponseMessage response = jurl("GET https://ya.ru/").fetch();
         System.out.println(response.getStatus());
         assertFalse(response.getStatus().isError());
     }
@@ -28,7 +28,7 @@ public class JUrlTest {
         ).andThen("GET ${yandex}/metro")
                 .andThen("GET ${yandex}/images")
                 .andThen("GET ${yandex}/maps")
-                .run();
+                .fetch();
 
         assertTrue(response.getStatus().isSuccess() || response.getStatus().isRedirected());
     }
@@ -58,7 +58,7 @@ public class JUrlTest {
                 .withExchange(mockExchange)
                 .enableLogger(HEADERS, BODY)
         ).andThen("GET https://ya.ru/")
-                .run();
+                .fetch();
         //then
         assertTrue(response.getStatus().isOk());
         assertTrue(response.getBody().contentType().isMultipart());

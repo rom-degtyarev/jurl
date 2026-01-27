@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static ru.jurl.support.Extractors.Last;
 import static ru.jurl.support.Messages.merge;
@@ -68,7 +67,7 @@ public class Conversation {
         return andThen(request(message));
     }
 
-    public <T> T run(Extractor<T> extractor) {
+    public <T> T fetch(Extractor<T> extractor) {
         List<ResponseMessage> replies = new ArrayList<>();
         RequestMessage message;
         while ((message = messages.poll()) != null) {
@@ -84,7 +83,7 @@ public class Conversation {
         return extractor.extract(replies);
     }
 
-    public ResponseMessage run() {
-        return run(Last(response -> response));
+    public ResponseMessage fetch() {
+        return fetch(Last(response -> response));
     }
 }
