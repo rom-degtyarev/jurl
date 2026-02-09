@@ -30,10 +30,19 @@ public class ConversationBuilder {
     }
 
     public ConversationBuilder enableLogger(Messages.PrintOption ...options) {
+        filters().add(new LoggerFilter(options));
+        return this;
+    }
+
+    private List<Filter<RequestMessage, ResponseMessage>> filters() {
         if (filters == null) {
             filters = new ArrayList<>();
         }
-        filters.add(new LoggerFilter(options));
+        return filters;
+    }
+
+    public ConversationBuilder withFilter(Filter<RequestMessage, ResponseMessage> filter) {
+        filters().add(filter);
         return this;
     }
 

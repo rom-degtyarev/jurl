@@ -1,8 +1,10 @@
 package ru.jurl;
 
 import org.junit.Test;
+import ru.jurl.filter.Filter;
 import ru.jurl.http.Exchange;
 import ru.jurl.http.MultipartContent;
+import ru.jurl.http.RequestMessage;
 import ru.jurl.http.ResponseMessage;
 
 import static org.junit.Assert.*;
@@ -11,6 +13,7 @@ import static ru.jurl.support.Messages.PrintOption.BODY;
 import static ru.jurl.support.Messages.PrintOption.HEADERS;
 import static ru.jurl.support.Messages.response;
 import static ru.jurl.support.Strings.toHexString;
+import static ru.jurl.support.Formats.duration;
 
 public class JUrlTest {
     @Test
@@ -66,5 +69,60 @@ public class JUrlTest {
         assertEquals("value1", multipart.parts().getFirst().getValueAsString());
         MultipartContent.BodyPart filePart = multipart.parts().getLast();
         assertEquals(toHexString("BINARY CONTENT"), filePart.getValueAsString());
+    }
+
+    @Test
+    public void parameterized_request() {
+        // заглушка ответа
+        Exchange mockResponse = request -> response("""
+                HTTP/1.1 200 OK
+                Content-Type: application/json
+                
+                {"success": true}
+                """);
+
+        // параметризация запроса
+        ResponseMessage response = jurl(conversation ->
+                conversation.withParameters(
+                        "host", "https://my-service.ru",
+                        "param1", "AAA",
+                        "param2", "BBB"
+                        ).withExchange(mockResponse) // <- заглушить ответ
+        ).andThen("""
+                POST http://${host}/api?param1=${param1}&param2=${param2}
+                Content-Type: application/json
+                
+                < classpath:test.json"""
+        ).fetch();
+
+        // обработка ответа
+        assertTrue(response.getStatus().isOk());
+    }
+
+    @Test
+    public void filter_request() {
+        // создаём фильтр
+        Filter<RequestMessage, ResponseMessage> timer = invocation -> {
+            long start = System.currentTimeMillis();
+            ResponseMessage response = invocation.invoke();
+            long time = System.currentTimeMillis() - start;
+            System.out.printf("HTTP exchange duration %s%n", duration(time));
+            return response;
+        };
+
+        // настройка диалога
+        Conversation conversation = jurl(options ->
+                options
+                        .withFilter(timer)
+                        .withExchange(rq -> response("HTTP/1.1 200 OK")) // <- заглушка ответа
+        );
+
+        // выполняем запрос
+        ResponseMessage response = conversation
+                .andThen("GET http://my-service/api?aaa=bbb")
+                .fetch();
+
+        // обработка ответа
+        assertTrue(response.getStatus().isOk());
     }
 }
