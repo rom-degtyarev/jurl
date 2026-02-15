@@ -22,6 +22,10 @@ public class Extractors {
                 ).map(Header::getValue).orElse("");
     }
 
+    public static Function<ResponseMessage, String> BodyText() {
+        return response -> response.getBody().toString();
+    }
+
     public static Function<ResponseMessage, String> BodyText(String groupName, String regExp) {
         return response -> {
             Require.notNull(response.getBody(), () -> "Response body is null");

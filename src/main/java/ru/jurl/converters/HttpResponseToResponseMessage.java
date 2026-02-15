@@ -14,13 +14,13 @@ import java.util.function.Function;
 import static ru.jurl.http.ProtocolVersion.HTTP_1_1;
 import static ru.jurl.http.ProtocolVersion.HTTP_2;
 import static ru.jurl.http.headers.ContentType.TEXT_PLAIN_UTF_8;
-import static ru.jurl.support.Headers.CONTENT_TYPE_FILTER;
+import static ru.jurl.support.Headers.CONTENT_TYPE;
 
 public class HttpResponseToResponseMessage implements Function<HttpResponse<byte[]>, ResponseMessage> {
     @Override
     public ResponseMessage apply(HttpResponse<byte[]> httpResponse) {
         List<Header> headers = cast(httpResponse.headers());
-        Optional<ContentType> contentType = Headers.getFirst(headers, CONTENT_TYPE_FILTER);
+        Optional<ContentType> contentType = Headers.getFirst(headers, CONTENT_TYPE);
         Body body = new Body(
                 contentType.orElse(TEXT_PLAIN_UTF_8),
                 httpResponse.body()

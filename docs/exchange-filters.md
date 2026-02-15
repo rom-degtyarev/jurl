@@ -27,5 +27,11 @@
     // обработка ответа
     assertTrue(response.getStatus().isOk());
 ```
+**Результат**
+```shell
+HTTP exchange duration 00:00:00.001
+
+Process finished with exit code 0
+```
 
 ### [<< Документация](../readme.md)

@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.function.Function;
 
 import static ru.jurl.support.Bytes.trim;
-import static ru.jurl.support.Headers.CONTENT_DISPOSITION;
-import static ru.jurl.support.Headers.CONTENT_TYPE;
+import static ru.jurl.support.Headers.CONTENT_DISPOSITION_HEADER;
+import static ru.jurl.support.Headers.CONTENT_TYPE_HEADER;
 import static ru.jurl.support.Messages.DEFAULT_CHARSET;
 
 public record BytesToMultipartContent(
@@ -49,10 +49,10 @@ public record BytesToMultipartContent(
             }
             String headerLine = new String(chunk, DEFAULT_CHARSET);
             Header header = Headers.valueOf(headerLine);
-            if (CONTENT_TYPE.equalsIgnoreCase(header.getName())) {
+            if (CONTENT_TYPE_HEADER.equalsIgnoreCase(header.getName())) {
                 bodyPart.withContentType((ContentType) header);
             }
-            if (CONTENT_DISPOSITION.equalsIgnoreCase(header.getName())) {
+            if (CONTENT_DISPOSITION_HEADER.equalsIgnoreCase(header.getName())) {
                 bodyPart.withContentDisposition((ContentDisposition) header);
             }
         }

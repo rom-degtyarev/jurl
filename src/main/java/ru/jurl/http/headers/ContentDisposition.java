@@ -6,7 +6,7 @@ import ru.jurl.support.Tokenizer;
 
 import java.util.Map;
 
-import static ru.jurl.support.Headers.CONTENT_DISPOSITION;
+import static ru.jurl.support.Headers.CONTENT_DISPOSITION_HEADER;
 import static ru.jurl.support.Messages.unquoted;
 
 @Getter
@@ -20,7 +20,7 @@ public class ContentDisposition extends Header {
     private final String fileName;
 
     public ContentDisposition(String value) {
-        super(CONTENT_DISPOSITION, value);
+        super(CONTENT_DISPOSITION_HEADER, value);
 
         Tokenizer tokens = new Tokenizer(value, ";");
         type = tokens.firstItem().trim();

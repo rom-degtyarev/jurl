@@ -4,7 +4,6 @@ import ru.jurl.http.Header;
 import ru.jurl.http.headers.ContentDisposition;
 import ru.jurl.http.headers.ContentType;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -12,10 +11,10 @@ import java.util.function.Predicate;
 import static java.util.Collections.emptyList;
 
 public class Headers {
-    public static final String CONTENT_TYPE = "Content-Type";
-    public static final String CONTENT_DISPOSITION = "Content-Disposition";
+    public static final String CONTENT_TYPE_HEADER = "Content-Type";
+    public static final String CONTENT_DISPOSITION_HEADER = "Content-Disposition";
 
-    public static final Predicate<Header> CONTENT_TYPE_FILTER = header -> header instanceof ContentType;
+    public static final Predicate<Header> CONTENT_TYPE = header -> header instanceof ContentType;
 
     public static <T extends Header> List<T> get(List<Header> headers, Predicate<Header> predicate) {
         if (headers == null) return emptyList();
@@ -28,9 +27,9 @@ public class Headers {
     }
 
     public static Header valueOf(String headerName, String headerValue) {
-        if (headerName.equalsIgnoreCase(CONTENT_TYPE))
+        if (headerName.equalsIgnoreCase(CONTENT_TYPE_HEADER))
             return new ContentType(headerValue);
-        if (headerName.equalsIgnoreCase(CONTENT_DISPOSITION))
+        if (headerName.equalsIgnoreCase(CONTENT_DISPOSITION_HEADER))
             return new ContentDisposition(headerValue);
         return new Header(headerName, headerValue);
     }

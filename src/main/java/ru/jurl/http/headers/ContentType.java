@@ -7,7 +7,7 @@ import ru.jurl.support.Tokenizer;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-import static ru.jurl.support.Headers.CONTENT_TYPE;
+import static ru.jurl.support.Headers.CONTENT_TYPE_HEADER;
 import static ru.jurl.support.Messages.charsetOf;
 import static ru.jurl.support.Messages.unquoted;
 import static ru.jurl.support.Strings.isEmpty;
@@ -21,7 +21,7 @@ public class ContentType extends Header {
     private final String boundary;
 
     public ContentType(String value) {
-        super(CONTENT_TYPE, value);
+        super(CONTENT_TYPE_HEADER, value);
         Tokenizer tokens = new Tokenizer(value, ";");
         contentType = tokens.firstItem().trim();
         Map<String, String> meta = tokens.toMap();
