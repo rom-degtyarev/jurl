@@ -2,10 +2,7 @@ package ru.jurl.support;
 
 import ru.jurl.converters.StringToRequestMessage;
 import ru.jurl.converters.StringToResponseMessage;
-import ru.jurl.http.Body;
-import ru.jurl.http.Header;
-import ru.jurl.http.RequestMessage;
-import ru.jurl.http.ResponseMessage;
+import ru.jurl.http.*;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -44,7 +41,7 @@ public class Messages {
 
     public static RequestMessage merge(
             RequestMessage message,
-            Map<String, Supplier<String>> parameters
+            Map<String, Parameter> parameters
     ) {
         if (parameters.isEmpty()) return message;
         MessageTemplate template = new MessageTemplate(message);

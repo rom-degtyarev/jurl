@@ -1,6 +1,5 @@
 package ru.jurl.converters;
 
-import ru.jurl.http.Body;
 import ru.jurl.http.Header;
 import ru.jurl.http.MultipartContent;
 import ru.jurl.http.headers.ContentType;
@@ -8,6 +7,8 @@ import ru.jurl.support.Headers;
 import ru.jurl.support.Tokenizer;
 
 import static ru.jurl.http.headers.ContentType.TEXT_PLAIN_UTF_8;
+import static ru.jurl.support.Bodies.toBytes;
+import static ru.jurl.support.Bodies.valueOf;
 import static ru.jurl.support.Strings.*;
 
 public record StringToHttpMessageParser(
@@ -35,19 +36,8 @@ public record StringToHttpMessageParser(
 
         String bodyLine = tokenizer.getRest("\n\n");
         if (bodyLine != null) {
-            String trimmedBody = bodyLine.trim();
-            byte[] content;
-            if (contentType.isText()) {
-                content = trimmedBody.getBytes(contentType.getCharset());
-            } else if (contentType.isMultipart()) {
-                MultipartContent multipart = new StringToMultipartContent(contentType.getBoundary()).apply(trimmedBody);
-                content = new MultipartContentToBytes().apply(multipart);
-            } else if (contentType.isFormUrlEncoded()) {
-                content = trimmedBody.getBytes(contentType.getCharset());
-            } else {
-                content = fromHexString(trimmedBody);
-            }
-            consumer.onBodyContent(new Body(contentType, content));
+            byte[] content = toBytes(bodyLine.trim(), contentType);
+            consumer.onBodyContent(valueOf(content, contentType));
         }
     }
 }

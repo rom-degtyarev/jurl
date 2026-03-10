@@ -5,11 +5,12 @@ import ru.jurl.http.Header;
 import ru.jurl.support.Tokenizer;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static ru.jurl.support.Headers.CONTENT_TYPE_HEADER;
-import static ru.jurl.support.Messages.charsetOf;
-import static ru.jurl.support.Messages.unquoted;
+import static ru.jurl.support.Messages.*;
 import static ru.jurl.support.Strings.isEmpty;
 
 @Getter
@@ -27,6 +28,10 @@ public class ContentType extends Header {
         Map<String, String> meta = tokens.toMap();
         charset = isText() ? charsetOf(meta.get("charset")) : null;
         boundary = unquoted(meta.get("boundary"));
+    }
+
+    public Charset getCharsetOrDefault() {
+        return charset == null ? DEFAULT_CHARSET : charset;
     }
 
     public boolean isText() {

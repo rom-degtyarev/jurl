@@ -1,11 +1,13 @@
 package ru.jurl.support;
 
 import org.junit.Test;
+import ru.jurl.http.Parameter;
 import ru.jurl.http.RequestMessage;
 
 import java.util.Map;
 
 import static org.junit.Assert.*;
+import static ru.jurl.support.MessageTemplate.hasPlaceholder;
 import static ru.jurl.support.Messages.merge;
 import static ru.jurl.support.Messages.request;
 
@@ -20,10 +22,10 @@ public class MessageTemplateTest {
                 < classpath:test.json
                 """);
         RequestMessage merged = merge(message, Map.of(
-                "host", () -> "localhost:8080",
-                "param1", () -> "aaa",
-                "param2", () -> "bbb",
-                "body-param", () -> "ccc"
+                "host", new Parameter("host", () -> "localhost:8080"),
+                "param1", new Parameter("param1", () -> "aaa"),
+                "param2", new Parameter("param2", () -> "bbb"),
+                "body-param", new Parameter("body-param", () -> "ccc")
         ));
 
         assertEquals("http://localhost:8080/api?param1=aaa&param2=bbb", merged.getRequestTarget());
@@ -33,5 +35,12 @@ public class MessageTemplateTest {
                   "success": true,
                   "body-param": "ccc"
                 }""", merged.getBody().toString());
+    }
+
+    @Test
+    public void hasPlaceholderTest() {
+        assertTrue(hasPlaceholder("< /files/test.json"));
+        assertTrue(hasPlaceholder("POST http://${host}/api?param1=${param1}&param2=${param2}"));
+        assertTrue(hasPlaceholder("${param2}"));
     }
 }

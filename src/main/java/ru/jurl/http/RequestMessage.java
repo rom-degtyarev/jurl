@@ -6,6 +6,7 @@ import ru.jurl.support.Messages;
 
 import java.util.List;
 
+import static ru.jurl.support.Bodies.valueOf;
 import static ru.jurl.support.Messages.PrintOption.HEADERS;
 
 @Builder(
@@ -28,7 +29,7 @@ public class RequestMessage {
                 .withRequestTarget(requestTarget)
                 .withProtocol(protocol)
                 .withHeaders(headers);
-        return body == null ? copy : copy.withBody(new Body(body.contentType(), body.content()));
+        return body == null ? copy : copy.withBody(valueOf(body.content(), body.contentType()));
     }
 
     @Override

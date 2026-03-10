@@ -4,6 +4,7 @@ import ru.jurl.Conversation;
 import ru.jurl.filter.Filter;
 import ru.jurl.filter.LoggerFilter;
 import ru.jurl.http.Exchange;
+import ru.jurl.http.Parameter;
 import ru.jurl.http.RequestMessage;
 import ru.jurl.http.ResponseMessage;
 import ru.jurl.support.Messages;
@@ -21,7 +22,7 @@ import static ru.jurl.support.Maps.mapOf;
 
 public class ConversationBuilder {
     private Exchange exchange;
-    private Map<String, Supplier<String>> parameters;
+    private Map<String, Parameter> parameters;
     private Map<String, Function<ResponseMessage, String>> replyParameters;
     private List<Filter<RequestMessage, ResponseMessage>> filters;
 
@@ -52,7 +53,8 @@ public class ConversationBuilder {
     }
 
     public ConversationBuilder withParameters(Map<String, Supplier<String>> parameters) {
-        parameters().putAll(parameters);
+        parameters.forEach((parameter, value) ->
+                parameters().put(parameter, new Parameter(parameter, value)));
         return this;
     }
 
@@ -65,12 +67,12 @@ public class ConversationBuilder {
     }
 
     public ConversationBuilder withParameter(String parameter, String value) {
-        parameters().put(parameter, () -> value);
+        parameters().put(parameter, new Parameter(parameter, () -> value));
         return this;
     }
 
     public ConversationBuilder withParameter(String parameter, Supplier<String> value) {
-        parameters().put(parameter, value);
+        parameters().put(parameter, new Parameter(parameter, value));
         return this;
     }
 
@@ -79,7 +81,7 @@ public class ConversationBuilder {
         return this;
     }
 
-    private Map<String, Supplier<String>> parameters() {
+    private Map<String, Parameter> parameters() {
         if (this.parameters == null) {
             this.parameters = new ConcurrentHashMap<>();
         }

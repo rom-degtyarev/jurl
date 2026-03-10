@@ -20,13 +20,13 @@ import static ru.jurl.support.Messages.request;
 
 public class Conversation {
     private final Function<RequestMessage, ResponseMessage> exchange;
-    private final Map<String, Supplier<String>> parameters;
+    private final Map<String, Parameter> parameters;
     private final Map<String, Function<ResponseMessage, String>> replyParameters;
     private final Deque<RequestMessage> messages;
 
     public Conversation(
             Exchange exchange,
-            Map<String, Supplier<String>> parameters,
+            Map<String, Parameter> parameters,
             Map<String, Function<ResponseMessage, String>> replyParameters,
             List<Filter<RequestMessage, ResponseMessage>> filters
     ) {
@@ -49,12 +49,12 @@ public class Conversation {
     }
 
     public Conversation parameter(String name, Supplier<String> value) {
-        parameters.put(name, value);
+        parameters.put(name, new Parameter(name, value));
         return this;
     }
 
     public Conversation parameter(String name, String value) {
-        parameters.put(name, () -> value);
+        parameters.put(name, new Parameter(name, () -> value));
         return this;
     }
 
@@ -77,7 +77,7 @@ public class Conversation {
             replyParameters
                     .forEach((key, mapFunction) -> {
                         String value = mapFunction.apply(reply);
-                        parameters.put(key, () -> value);
+                        parameters.put(key, new Parameter(key, () -> value));
                     });
         }
         return extractor.extract(replies);

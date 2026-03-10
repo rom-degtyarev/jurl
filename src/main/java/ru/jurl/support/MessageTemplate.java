@@ -1,14 +1,16 @@
 package ru.jurl.support;
 
 import ru.jurl.http.Body;
+import ru.jurl.http.Parameter;
 import ru.jurl.http.RequestMessage;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public record MessageTemplate(RequestMessage message) {
-    public RequestMessage merge(Map<String, Supplier<String>> parameters) {
+    public RequestMessage merge(Map<String, Parameter> parameters) {
         RequestMessage.RequestMessageBuilder copy = message.copy();
         Map<String, String> values = fetch(parameters);
         copy.withRequestTarget(merge(message.getRequestTarget(), values));
@@ -20,7 +22,12 @@ public record MessageTemplate(RequestMessage message) {
 
     private Body merge(Body body, Map<String, String> values) {
         String string = merge(body.toString(), values);
-        return new Body(body.contentType(), string.getBytes(body.contentType().getCharset()));
+        return Bodies.valueOf(string, body.contentType());
+    }
+
+    public static boolean hasPlaceholder(String content) {
+        Matcher placeholder = Pattern.compile("\\$\\{.*}").matcher(content);
+        return content.startsWith("<") || placeholder.find();
     }
 
     private String merge(String text, Map<String, String> parameters) {
@@ -35,7 +42,7 @@ public record MessageTemplate(RequestMessage message) {
         return text;
     }
 
-    private Map<String, String> fetch(Map<String, Supplier<String>> parameters) {
+    private Map<String, String> fetch(Map<String, Parameter> parameters) {
         Map<String, String> map = new HashMap<>();
         parameters.forEach((key, value) -> {
             map.put(key, value.get());

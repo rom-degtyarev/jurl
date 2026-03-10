@@ -3,10 +3,14 @@ package ru.jurl.http;
 import lombok.Builder;
 import ru.jurl.http.headers.ContentDisposition;
 import ru.jurl.http.headers.ContentType;
+import ru.jurl.support.Bodies;
+import ru.jurl.support.MessageTemplate;
 
+import java.nio.charset.Charset;
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
+import static ru.jurl.support.MessageTemplate.hasPlaceholder;
 import static ru.jurl.support.Messages.DEFAULT_CHARSET;
 import static ru.jurl.support.Strings.isEmpty;
 import static ru.jurl.support.Strings.toHexString;
@@ -36,19 +40,17 @@ public record MultipartContent(
     ) {
         @Override
         public String toString() {
-            StringBuilder text = new StringBuilder()
-                    .append(contentDisposition).append("\n");
-            if (contentType != null) {
-                text.append(contentType).append("\n");
-            }
-            text.append("\n").append(getValueAsString());
-            return text.toString();
+            return Bodies.toString(this);
         }
 
         public String getValueAsString() {
+            Charset charset = contentType == null ? DEFAULT_CHARSET : contentType.getCharsetOrDefault();
+            String stringContent = new String(content, charset);
+            if (hasPlaceholder(stringContent))
+                return stringContent;
             if (contentType != null) {
                 if (!isFile() || contentType.isText()) {
-                    return new String(content, contentType.getCharset());
+                    return stringContent;
                 } else {
                     return toHexString(content);
                 }
@@ -56,7 +58,7 @@ public record MultipartContent(
                 if (isFile()) {
                     return toHexString(content);
                 } else {
-                    return new String(content, DEFAULT_CHARSET);
+                    return stringContent;
                 }
             }
         }
