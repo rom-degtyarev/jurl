@@ -4,16 +4,15 @@ import lombok.Builder;
 import ru.jurl.http.headers.ContentDisposition;
 import ru.jurl.http.headers.ContentType;
 import ru.jurl.support.Bodies;
-import ru.jurl.support.MessageTemplate;
 
 import java.nio.charset.Charset;
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
-import static ru.jurl.support.MessageTemplate.hasPlaceholder;
 import static ru.jurl.support.Messages.DEFAULT_CHARSET;
 import static ru.jurl.support.Strings.isEmpty;
 import static ru.jurl.support.Strings.toHexString;
+import static ru.jurl.support.templates.Templates.hasPlaceholder;
 
 public record MultipartContent(
         String boundary,
@@ -40,7 +39,13 @@ public record MultipartContent(
     ) {
         @Override
         public String toString() {
-            return Bodies.toString(this);
+            StringBuilder text = new StringBuilder()
+                    .append(contentDisposition).append("\n");
+            if (contentType != null) {
+                text.append(contentType).append("\n");
+            }
+            text.append("\n").append(getValueAsString());
+            return text.toString();
         }
 
         public String getValueAsString() {

@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Bytes {
+    public static final byte[] EMPTY = new byte[0];
     public static final byte NEW_LINE = '\n';
     public static final byte CR = '\r';
     public static final byte TAB = '\t';
@@ -66,7 +67,7 @@ public class Bytes {
             if (currentIndex != i)
                 byteArrays.add(Arrays.copyOfRange(array, currentIndex, i));
             else if (!skipEmptyChunk) {
-                byteArrays.add(new byte[0]);
+                byteArrays.add(EMPTY);
             }
             currentIndex = i + delimiter.length;
         }
@@ -75,5 +76,18 @@ public class Bytes {
             byteArrays.add(Arrays.copyOfRange(array, currentIndex, array.length));
 
         return byteArrays;
+    }
+
+    public static int indexOf(byte[] array, byte[] subArray) {
+        next:
+        for (int i = 0; i < array.length - subArray.length + 1; i++) {
+            for (int j = 0; j < subArray.length; j++) {
+                if (array[i + j] != subArray[j]) {
+                    continue next;
+                }
+            }
+            return i;
+        }
+        return -1;
     }
 }

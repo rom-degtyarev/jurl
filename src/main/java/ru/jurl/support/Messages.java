@@ -3,12 +3,11 @@ package ru.jurl.support;
 import ru.jurl.converters.StringToRequestMessage;
 import ru.jurl.converters.StringToResponseMessage;
 import ru.jurl.http.*;
+import ru.jurl.support.templates.RequestTemplate;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.joining;
@@ -44,7 +43,7 @@ public class Messages {
             Map<String, Parameter> parameters
     ) {
         if (parameters.isEmpty()) return message;
-        MessageTemplate template = new MessageTemplate(message);
+        RequestTemplate template = new RequestTemplate(message);
         return template.merge(parameters);
     }
 

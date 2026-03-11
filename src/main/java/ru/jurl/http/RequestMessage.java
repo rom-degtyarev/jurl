@@ -29,7 +29,7 @@ public class RequestMessage {
                 .withRequestTarget(requestTarget)
                 .withProtocol(protocol)
                 .withHeaders(headers);
-        return body == null ? copy : copy.withBody(valueOf(body.content(), body.contentType()));
+        return body == null ? copy : copy.withBody(new Body(body.contentType(), body.content()));
     }
 
     @Override

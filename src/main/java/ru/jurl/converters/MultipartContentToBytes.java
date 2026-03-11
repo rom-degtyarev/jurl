@@ -1,11 +1,13 @@
 package ru.jurl.converters;
 
+import lombok.SneakyThrows;
 import ru.jurl.http.MultipartContent;
 
 import java.io.ByteArrayOutputStream;
 import java.util.function.Function;
 
 public class MultipartContentToBytes implements Function<MultipartContent, byte[]> {
+    @SneakyThrows
     @Override
     public byte[] apply(MultipartContent multipartContent) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -18,6 +20,7 @@ public class MultipartContentToBytes implements Function<MultipartContent, byte[
         return out.toByteArray();
     }
 
+    @SneakyThrows
     private byte[] toBytes(String boundary, MultipartContent.BodyPart bodyPart) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         out.writeBytes(boundaryBytes(boundary, "\n"));

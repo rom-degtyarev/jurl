@@ -6,13 +6,19 @@ import ru.jurl.http.headers.ContentDisposition;
 import ru.jurl.http.headers.ContentType;
 import ru.jurl.support.*;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
+import static java.util.Arrays.copyOfRange;
+import static ru.jurl.http.headers.ContentType.TEXT_PLAIN_UTF_8;
 import static ru.jurl.support.Bytes.trim;
 import static ru.jurl.support.Headers.CONTENT_DISPOSITION_HEADER;
 import static ru.jurl.support.Headers.CONTENT_TYPE_HEADER;
 import static ru.jurl.support.Messages.DEFAULT_CHARSET;
+import static ru.jurl.support.Strings.isEmpty;
+import static ru.jurl.support.Strings.lineTokenizer;
 
 public record BytesToMultipartContent(
         ContentType contentType
@@ -35,27 +41,28 @@ public record BytesToMultipartContent(
     }
 
     private MultipartContent.BodyPart toBodyPart(byte[] bytes) {
-        List<byte[]> chunks = Bytes.split(trim(bytes), "\n".getBytes(), false);
+        byte[] emptyLine = "\n\n".getBytes();
+        int indx = Bytes.indexOf(bytes, emptyLine);
+        Require.isTrue(indx > 0, () -> "Invalid multipart/form-data content - empty chunk");
+        byte[] headerBytes = trim(copyOfRange(bytes, 0, indx));
+        byte[] contentBytes = copyOfRange(bytes, indx + emptyLine.length, bytes.length);
         MultipartContent.BodyPart.BodyPartBuilder bodyPart = MultipartContent.BodyPart.create();
-        boolean contentExpected = false;
-        for (byte[] chunk : chunks) {
-            if (contentExpected) {
-                bodyPart.withContent(chunk);
-                break;
-            }
-            if (chunk.length == 0) {
-                contentExpected = true;
-                continue;
-            }
-            String headerLine = new String(chunk, DEFAULT_CHARSET);
+        List<String> lines = lineTokenizer(new String(headerBytes, DEFAULT_CHARSET)).toList();
+        ContentType contentType = TEXT_PLAIN_UTF_8;
+        for (String headerLine : lines) {
             Header header = Headers.valueOf(headerLine);
             if (CONTENT_TYPE_HEADER.equalsIgnoreCase(header.getName())) {
-                bodyPart.withContentType((ContentType) header);
+                contentType = (ContentType) header;
+                bodyPart.withContentType(contentType);
             }
             if (CONTENT_DISPOSITION_HEADER.equalsIgnoreCase(header.getName())) {
                 bodyPart.withContentDisposition((ContentDisposition) header);
             }
         }
+        if (contentType.isText()) {
+            contentBytes = trim(contentBytes);
+        }
+        bodyPart.withContent(contentBytes);
         return bodyPart.please();
     }
 }

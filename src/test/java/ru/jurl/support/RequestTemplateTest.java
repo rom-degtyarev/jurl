@@ -6,12 +6,13 @@ import ru.jurl.http.RequestMessage;
 
 import java.util.Map;
 
-import static org.junit.Assert.*;
-import static ru.jurl.support.MessageTemplate.hasPlaceholder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static ru.jurl.support.Messages.merge;
 import static ru.jurl.support.Messages.request;
+import static ru.jurl.support.templates.Templates.hasPlaceholder;
 
-public class MessageTemplateTest {
+public class RequestTemplateTest {
 
     @Test
     public void merge_message_template() {
@@ -39,7 +40,7 @@ public class MessageTemplateTest {
 
     @Test
     public void hasPlaceholderTest() {
-        assertTrue(hasPlaceholder("< /files/test.json"));
+        assertTrue(hasPlaceholder("< path:/files/test.json"));
         assertTrue(hasPlaceholder("POST http://${host}/api?param1=${param1}&param2=${param2}"));
         assertTrue(hasPlaceholder("${param2}"));
     }

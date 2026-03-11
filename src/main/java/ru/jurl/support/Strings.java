@@ -16,7 +16,7 @@ public class Strings {
     }
 
     public static boolean isEmpty(String string) {
-        return string == null;
+        return string == null || string.isEmpty();
     }
 
     public static String toHexString(String string) {

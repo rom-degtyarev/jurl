@@ -11,11 +11,20 @@ import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.joining;
 import static ru.jurl.support.Messages.DEFAULT_CHARSET;
+import static ru.jurl.support.Strings.isEmpty;
 
 public class Resources {
     public static final String PATH_PREFIX = "path:";
     public static final String FILE_PREFIX = "file:";
     public static final String CLASSPATH_PREFIX = "classpath:";
+
+    public static boolean isResource(String string) {
+        return !isEmpty(string) &&
+                (string.startsWith(PATH_PREFIX) ||
+                        string.startsWith(FILE_PREFIX) ||
+                        string.startsWith(CLASSPATH_PREFIX)
+                );
+    }
 
     @SneakyThrows
     public static Supplier<String> of(String location) {

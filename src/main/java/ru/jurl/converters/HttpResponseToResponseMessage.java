@@ -22,7 +22,7 @@ public class HttpResponseToResponseMessage implements Function<HttpResponse<byte
     public ResponseMessage apply(HttpResponse<byte[]> httpResponse) {
         List<Header> headers = cast(httpResponse.headers());
         Optional<ContentType> contentType = Headers.getFirst(headers, CONTENT_TYPE);
-        Body body = valueOf(httpResponse.body(), contentType.orElse(TEXT_PLAIN_UTF_8));
+        Body body = new Body(contentType.orElse(TEXT_PLAIN_UTF_8), httpResponse.body());
         return ResponseMessage
                 .create()
                 .withProtocol(cast(httpResponse.version()))

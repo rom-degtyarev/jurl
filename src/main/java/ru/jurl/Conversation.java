@@ -3,6 +3,7 @@ package ru.jurl;
 import ru.jurl.filter.Filter;
 import ru.jurl.filter.InterceptedFunction;
 import ru.jurl.http.*;
+import ru.jurl.support.templates.Templates;
 
 import java.util.ArrayList;
 import java.util.Deque;
@@ -17,12 +18,13 @@ import static java.util.Collections.emptyMap;
 import static ru.jurl.support.Extractors.Last;
 import static ru.jurl.support.Messages.merge;
 import static ru.jurl.support.Messages.request;
+import static ru.jurl.support.templates.Templates.string;
 
 public class Conversation {
     private final Function<RequestMessage, ResponseMessage> exchange;
     private final Map<String, Parameter> parameters;
     private final Map<String, Function<ResponseMessage, String>> replyParameters;
-    private final Deque<RequestMessage> messages;
+    private final Deque<Function<Map<String, Parameter>, RequestMessage>> messages;
 
     public Conversation(
             Exchange exchange,
@@ -59,20 +61,21 @@ public class Conversation {
     }
 
     public Conversation andThen(RequestMessage message) {
-        messages.add(message);
+        messages.add(parameters -> merge(message, parameters));
         return this;
     }
 
     public Conversation andThen(String message) {
-        return andThen(request(message));
+        messages.add(parameters -> request(string(message).merge(parameters)));
+        return this;
     }
 
     public <T> T fetch(Extractor<T> extractor) {
         List<ResponseMessage> replies = new ArrayList<>();
-        RequestMessage message;
-        while ((message = messages.poll()) != null) {
-            RequestMessage request = merge(message, parameters);
-            ResponseMessage reply = exchange.apply(request);
+        Function<Map<String, Parameter>, RequestMessage> template;
+        while ((template = messages.poll()) != null) {
+            RequestMessage message = template.apply(parameters);
+            ResponseMessage reply = exchange.apply(message);
             replies.add(reply);
             replyParameters
                     .forEach((key, mapFunction) -> {

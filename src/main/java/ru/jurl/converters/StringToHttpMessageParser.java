@@ -1,5 +1,6 @@
 package ru.jurl.converters;
 
+import ru.jurl.http.Body;
 import ru.jurl.http.Header;
 import ru.jurl.http.MultipartContent;
 import ru.jurl.http.headers.ContentType;
@@ -37,7 +38,7 @@ public record StringToHttpMessageParser(
         String bodyLine = tokenizer.getRest("\n\n");
         if (bodyLine != null) {
             byte[] content = toBytes(bodyLine.trim(), contentType);
-            consumer.onBodyContent(valueOf(content, contentType));
+            consumer.onBodyContent(new Body(contentType, content));
         }
     }
 }

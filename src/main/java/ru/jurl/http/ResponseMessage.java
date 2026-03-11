@@ -28,6 +28,14 @@ public class ResponseMessage {
         return (T) header.orElse(null);
     }
 
+    public ResponseMessage.ResponseMessageBuilder copy() {
+        ResponseMessage.ResponseMessageBuilder copy = create()
+                .withProtocol(protocol)
+                .withStatus(status)
+                .withHeaders(headers);
+        return body == null ? copy : copy.withBody(new Body(body.contentType(), body.content()));
+    }
+
     @Override
     public String toString() {
         return Messages.toString(this, HEADERS);

@@ -2,8 +2,9 @@ package ru.jurl.http;
 
 import ru.jurl.converters.BytesToMultipartContent;
 import ru.jurl.http.headers.ContentType;
-import ru.jurl.support.Bodies;
 import ru.jurl.support.Require;
+
+import static ru.jurl.support.Strings.toHexString;
 
 public record Body(
         ContentType contentType,
@@ -19,6 +20,12 @@ public record Body(
 
     @Override
     public String toString() {
-        return Bodies.toString(this);
+        if (contentType.isText() || contentType.isFormUrlEncoded()) {
+            return new String(content, contentType.getCharsetOrDefault());
+        }
+        if (contentType.isMultipart()) {
+            return getMultipartContent().toString();
+        }
+        return toHexString(content);
     }
 }
