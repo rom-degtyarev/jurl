@@ -5,10 +5,21 @@
 
 # Пример
 
+## Выполнение GET-запроса HTTP-клиентом Java
 ```java
-        ResponseMessage response = jurl("GET https://ya.ru/").fetch();
+    HttpClient client = HttpClient.newHttpClient();
+    HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://example.com/"))
+                    .build();
+    HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+    assertTrue(response.statusCode() == 200);
+```
 
-        assertTrue(response.getStatus().isOk());
+## Выполнение GET-запроса JURL
+```java
+    ResponseMessage response = jurl("http://example.com/").fetch();
+
+    assertTrue(response.getStatus().isOk());
 ```
 
 # Фичи
